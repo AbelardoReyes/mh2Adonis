@@ -1,7 +1,7 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-import { Queue, Worker } from 'bullmq'
+//import { Queue, Worker } from 'bullmq'
 import Mail from '@ioc:Adonis/Addons/Mail'
 
 export default class UsersController {
@@ -23,16 +23,14 @@ export default class UsersController {
       user.ap_materno = request.input('ap_materno')
       user.ap_paterno = request.input('ap_paterno')
       user.telefono = request.input('telefono')
+      await user.save()
       if (await user.save) {
         await Mail.send((message) => {
           message
             .from('abelardoreyes256@gmail.com')
-            .to('abelardoreyes256@gmail.com')
+            .to(user.email)
             .subject('Welcome Onboard!')
-          message.htmlView('emails/welcome', {
-            user: { fullName: 'Some Name' },
-            url: 'https://your-app.com/verification-url',
-          })
+            .htmlView('emails/welcome')
         })
         return 'ok'
       }
