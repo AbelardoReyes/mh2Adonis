@@ -25,6 +25,7 @@ export default class ChefsController {
                 'edad.required': 'La edad es requerida',
             },
         })
+        if (data) {
 
         const chef = new Chef()
         chef.nombre = request.input('nombre')
@@ -40,6 +41,7 @@ export default class ChefsController {
             error: false
         }
         response.send(respuesta)
+      }
     }
     public async obtenerChefs({ response }: HttpContextContract) {
         const chefs = await Chef.all()
@@ -71,6 +73,7 @@ export default class ChefsController {
             },
         })
         if (chef) {
+          if (data) {
             chef.nombre = request.input('nombre')
             chef.ap_paterno = request.input('ap_paterno')
             chef.ap_materno = request.input('ap_materno')
@@ -78,6 +81,7 @@ export default class ChefsController {
             chef.edad = request.input('edad')
             await chef.save()
             response.send(chef)
+          }
         } else {
             response.status(404).send({ message: 'Chef no encontrado' })
         }

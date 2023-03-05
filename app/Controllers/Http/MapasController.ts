@@ -19,7 +19,7 @@ export default class MapasController {
         'totalZonas.range': 'El total de zonas debe estar entre 1 y 10',
       },
     })
-
+    if (data) {
     const mapa = new Mapa()
     mapa.nombre = request.input('nombre')
     mapa.descripcion = request.input('descripcion')
@@ -33,6 +33,7 @@ export default class MapasController {
 
     }
     response.send(respuesta)
+  }
   }
   public async obtenerMapas({ response }: HttpContextContract) {
     const mapas = await Mapa.all()
@@ -59,11 +60,12 @@ export default class MapasController {
       },
     })
     if (mapa) {
+      if (data) {
       mapa.nombre = request.input('nombre')
       mapa.descripcion = request.input('descripcion')
       mapa.totalZonas = request.input('totalZonas')
       await mapa.save()
-      response.send(mapa)
+      response.send(mapa)}
     } else {
       response.status(404).send({ message: 'Mapa no encontrado' })
     }

@@ -25,6 +25,7 @@ export default class ObjetosController {
         'limiteBolsa.required': 'El limite de bolsa es requerido',
       },
     })
+    if (data) {
     const objeto = new Objetos()
     objeto.nombre = request.input('nombre')
     objeto.descripcion = request.input('descripcion')
@@ -41,6 +42,7 @@ export default class ObjetosController {
 
     }
     response.send(respuesta)
+  }
   }
   public async obtenerObjetos({ response }: HttpContextContract) {
     const objetos = await Objetos.all()
@@ -71,6 +73,7 @@ export default class ObjetosController {
       },
     })
     if (objeto) {
+      if (data) {
       objeto.nombre = request.input('nombre')
       objeto.descripcion = request.input('descripcion')
       objeto.rareza = request.input('rareza')
@@ -78,6 +81,7 @@ export default class ObjetosController {
       objeto.limiteBolsa = request.input('limiteBolsa')
       await objeto.save()
       response.send(objeto)
+      }
     } else {
       response.status(404).send({ message: 'Objeto no encontrado' })
     }

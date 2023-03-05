@@ -21,7 +21,7 @@ export default class IngredientesController {
         'cantidad.required': 'La cantidad es requerida',
       },
     })
-
+    if (data) {
     const ingrediente = new Ingredientes()
     ingrediente.nombre = request.input('nombre')
     ingrediente.tipo = request.input('tipo')
@@ -35,6 +35,7 @@ export default class IngredientesController {
 
     }
     response.send(respuesta)
+  }
   }
   public async obtenerIngredientes({ response }: HttpContextContract) {
     const ingredientes = await Ingredientes.all()
@@ -61,11 +62,13 @@ export default class IngredientesController {
       },
     })
     if (ingrediente) {
+      if (data) {
       ingrediente.nombre = request.input('nombre')
       ingrediente.tipo = request.input('tipo')
       ingrediente.cantidad = request.input('cantidad')
       await ingrediente.save()
       response.send(ingrediente)
+      }
     } else {
       response.status(404).send({ message: 'Ingrediente no encontrado' })
     }

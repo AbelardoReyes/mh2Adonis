@@ -23,7 +23,7 @@ export default class RecetasController {
         'chef_id.required': 'El chef es requerido',
       },
     })
-
+    if (data) {
     const receta = new Receta()
     receta.nombre = request.input('nombre')
     receta.duracion = request.input('duracion')
@@ -38,6 +38,7 @@ export default class RecetasController {
 
     }
     response.send(respuesta)
+  }
   }
   public async obtenerRecetas({ response }: HttpContextContract) {
     const recetas = await Receta.all()
@@ -65,14 +66,18 @@ export default class RecetasController {
         'chef_id.required': 'El chef es requerido',
       },
     })
-
+    if (!data){
+      return response.status(400).send({ message: 'Datos invalidos' })
+    }
     if (receta) {
+      if (data) {
       receta.nombre = request.input('nombre')
       receta.duracion = request.input('duracion')
       receta.preparacion = request.input('preparacion')
       receta.chef_id = request.input('chef_id')
       await receta.save()
       response.send(receta)
+      }
     } else {
       response.status(404).send({ message: 'Receta no encontrada' })
     }
