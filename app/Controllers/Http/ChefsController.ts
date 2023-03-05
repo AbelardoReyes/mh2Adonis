@@ -1,8 +1,31 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Chef from 'App/Models/Chef'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class ChefsController {
     public async registrarChef({ request, response }: HttpContextContract) {
+        const newPostSchema = schema.create({
+            nombre: schema.string({ trim: true }, [
+                rules.required(),
+                rules.unique({ table: 'chefs', column: 'nombre' }),
+            ]),
+            ap_paterno: schema.string({ trim: true }, [rules.required()]),
+            ap_materno: schema.string({ trim: true }, [rules.required()]),
+            nacionalidad: schema.string({ trim: true }, [rules.required()]),
+            edad: schema.number([rules.required()]),
+        })
+        const data = await request.validate({
+            schema: newPostSchema,
+            messages: {
+                'nombre.required': 'El nombre es requerido',
+                'nombre.unique': 'El nombre ya existe',
+                'ap_paterno.required': 'El apellido paterno es requerido',
+                'ap_materno.required': 'El apellido materno es requerido',
+                'nacionalidad.required': 'La nacionalidad es requerida',
+                'edad.required': 'La edad es requerida',
+            },
+        })
+
         const chef = new Chef()
         chef.nombre = request.input('nombre')
         chef.ap_paterno = request.input('ap_paterno')
@@ -10,13 +33,13 @@ export default class ChefsController {
         chef.nacionalidad = request.input('nacionalidad')
         chef.edad = request.input('edad')
         await chef.save()
-        const data = {
+        const respuesta = {
             status: 200,
             message: 'Chef registrado',
             data: chef,
             error: false
         }
-        response.send(data)
+        response.send(respuesta)
     }
     public async obtenerChefs({ response }: HttpContextContract) {
         const chefs = await Chef.all()
@@ -28,6 +51,25 @@ export default class ChefsController {
     }
     public async actualizarChef({ params, request, response }: HttpContextContract) {
         const chef = await Chef.find(params.id)
+        const newPostSchema = schema.create({
+            nombre: schema.string({ trim: true }, [
+                rules.required()]),
+            ap_paterno: schema.string({ trim: true }, [rules.required()]),
+            ap_materno: schema.string({ trim: true }, [rules.required()]),
+            nacionalidad: schema.string({ trim: true }, [rules.required()]),
+            edad: schema.number([rules.required()]),
+        })
+        const data = await request.validate({
+
+            schema: newPostSchema,
+            messages: {
+                'nombre.required': 'El nombre es requerido',
+                'ap_paterno.required': 'El apellido paterno es requerido',
+                'ap_materno.required': 'El apellido materno es requerido',
+                'nacionalidad.required': 'La nacionalidad es requerida',
+                'edad.required': 'La edad es requerida',
+            },
+        })
         if (chef) {
             chef.nombre = request.input('nombre')
             chef.ap_paterno = request.input('ap_paterno')

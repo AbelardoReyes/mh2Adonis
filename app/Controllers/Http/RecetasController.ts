@@ -1,22 +1,43 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Receta from 'App/Models/Receta'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class RecetasController {
   public async registrarReceta({ request, response }: HttpContextContract) {
+    const newPostSchema = schema.create({
+      nombre: schema.string({ trim: true }, [
+        rules.required(),
+        rules.unique({ table: 'recetas', column: 'nombre' }),
+      ]),
+      duracion: schema.string({ trim: true }, [rules.required()]),
+      preparacion: schema.string({ trim: true }, [rules.required()]),
+      chef_id: schema.number([rules.required()]),
+    })
+    const data = await request.validate({
+      schema: newPostSchema,
+      messages: {
+        'nombre.required': 'El nombre es requerido',
+        'nombre.unique': 'El nombre ya existe',
+        'duracion.required': 'La duracion es requerida',
+        'preparacion.required': 'La preparacion es requerida',
+        'chef_id.required': 'El chef es requerido',
+      },
+    })
+
     const receta = new Receta()
     receta.nombre = request.input('nombre')
     receta.duracion = request.input('duracion')
     receta.preparacion = request.input('preparacion')
     receta.chef_id = request.input('chef_id')
     await receta.save()
-    const data = {
+    const respuesta = {
       status : 200,
       message: 'Receta registrada',
       data: receta,
       error: false
 
     }
-    response.send(data)
+    response.send(respuesta)
   }
   public async obtenerRecetas({ response }: HttpContextContract) {
     const recetas = await Receta.all()
@@ -28,6 +49,23 @@ export default class RecetasController {
   }
   public async actualizarReceta({ params, request, response }: HttpContextContract) {
     const receta = await Receta.find(params.id)
+    const newPostSchema = schema.create({
+      nombre: schema.string({ trim: true }, [
+        rules.required()]),
+      duracion: schema.string({ trim: true }, [rules.required()]),
+      preparacion: schema.string({ trim: true }, [rules.required()]),
+      chef_id: schema.number([rules.required()]),
+    })
+    const data = await request.validate({
+      schema: newPostSchema,
+      messages: {
+        'nombre.required': 'El nombre es requerido',
+        'duracion.required': 'La duracion es requerida',
+        'preparacion.required': 'La preparacion es requerida',
+        'chef_id.required': 'El chef es requerido',
+      },
+    })
+
     if (receta) {
       receta.nombre = request.input('nombre')
       receta.duracion = request.input('duracion')

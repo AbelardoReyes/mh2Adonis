@@ -1,21 +1,40 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Ingredientes from 'App/Models/Ingrediente'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class IngredientesController {
   public async registrarIngrediente({ request, response }: HttpContextContract) {
+    const validationSchema = schema.create({
+      nombre: schema.string({ trim: true }, [
+        rules.required(),
+        rules.unique({ table: 'ingredientes', column: 'nombre' }),
+      ]),
+      tipo: schema.string({ trim: true }, [rules.required()]),
+      cantidad: schema.number([rules.required()]),
+    })
+    const data = await request.validate({
+      schema: validationSchema,
+      messages: {
+        'nombre.required': 'El nombre es requerido',
+        'nombre.unique': 'El nombre ya existe',
+        'tipo.required': 'El tipo es requerido',
+        'cantidad.required': 'La cantidad es requerida',
+      },
+    })
+
     const ingrediente = new Ingredientes()
     ingrediente.nombre = request.input('nombre')
     ingrediente.tipo = request.input('tipo')
     ingrediente.cantidad = request.input('cantidad')
     await ingrediente.save()
-    const data = {
+    const respuesta = {
       status : 200,
       message: 'Ingrediente registrado',
       data: ingrediente,
       error: false
 
     }
-    response.send(data)
+    response.send(respuesta)
   }
   public async obtenerIngredientes({ response }: HttpContextContract) {
     const ingredientes = await Ingredientes.all()
@@ -27,6 +46,20 @@ export default class IngredientesController {
   }
   public async actualizarIngrediente({ params, request, response }: HttpContextContract) {
     const ingrediente = await Ingredientes.find(params.id)
+    const validationSchema = schema.create({
+      nombre: schema.string({ trim: true }, [
+        rules.required()]),
+      tipo: schema.string({ trim: true }, [rules.required()]),
+      cantidad: schema.number([rules.required()]),
+    })
+    const data = await request.validate({
+      schema: validationSchema,
+      messages: {
+        'nombre.required': 'El nombre es requerido',
+        'tipo.required': 'El tipo es requerido',
+        'cantidad.required': 'La cantidad es requerida',
+      },
+    })
     if (ingrediente) {
       ingrediente.nombre = request.input('nombre')
       ingrediente.tipo = request.input('tipo')
