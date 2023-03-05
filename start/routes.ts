@@ -34,3 +34,10 @@ Route.get('/receta', 'RecetasController.obtenerRecetas')
 Route.get('/receta/:id', 'RecetasController.obtenerReceta')
 Route.put('/receta/:id', 'RecetasController.actualizarReceta')
 Route.delete('/receta/:id', 'RecetasController.eliminarReceta')
+
+Route.post('/ingrediente', 'IngredientesController.registrarIngrediente')
+Route.get('/ingrediente', 'IngredientesController.obtenerIngredientes')
+Route.get('/ingrediente/:id', 'IngredientesController.obtenerIngrediente')
+Route.put('/ingrediente/:id', 'IngredientesController.actualizarIngrediente')
+Route.delete('/ingrediente/:id', 'IngredientesController.eliminarIngrediente')
+

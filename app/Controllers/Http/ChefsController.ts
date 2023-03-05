@@ -2,7 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Chef from 'App/Models/Chef'
 
 export default class ChefsController {
-    public async registrarChef({ request }: HttpContextContract) {
+    public async registrarChef({ request, response }: HttpContextContract) {
         const chef = new Chef()
         chef.nombre = request.input('nombre')
         chef.ap_paterno = request.input('ap_paterno')
@@ -10,6 +10,13 @@ export default class ChefsController {
         chef.nacionalidad = request.input('nacionalidad')
         chef.edad = request.input('edad')
         await chef.save()
+        const data = {
+            status: 200,
+            message: 'Chef registrado',
+            data: chef,
+            error: false
+        }
+        response.send(data)
     }
     public async obtenerChefs({ response }: HttpContextContract) {
         const chefs = await Chef.all()
