@@ -1,4 +1,3 @@
-import { Response } from '@adonisjs/core/build/standalone'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Ingredientes from 'App/Models/Ingrediente'
 
