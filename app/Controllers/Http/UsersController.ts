@@ -23,7 +23,7 @@ export default class UsersController {
       user.ap_materno = request.input('ap_materno')
       user.ap_paterno = request.input('ap_paterno')
       user.telefono = request.input('telefono')
-      await user.save()
+      //await user.save()
       if (await user.save) {
         await Mail.send((message) => {
           message
