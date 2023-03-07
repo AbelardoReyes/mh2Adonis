@@ -5,9 +5,8 @@ import User from 'App/Models/User'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
-import axios from 'axios'
 const local = 'http://127.0.0.1:3333'
-
+const Jwt = require('jsonwebtoken')
 
 
 
@@ -61,14 +60,14 @@ export default class UsersController {
 
       const url = local + Route.makeSignedUrl('codigo', { id: user.id },
         { expiresIn: '1 day' })
-/*
-      axios.post('https://rest.nexmo.com/sms/json', {
-        from: 'Nexmo',
-        to: '528714733996',
-        text: 'Tu codigo de verificacion es: ' + nRandom,
-        api_key: '22bd2a4a',
-        api_secret: 'KPOZLO3r34vSCZGw'
-      })*/
+      /*
+            axios.post('https://rest.nexmo.com/sms/json', {
+              from: 'Nexmo',
+              to: '528714733996',
+              text: 'Tu codigo de verificacion es: ' + nRandom,
+              api_key: '22bd2a4a',
+              api_secret: 'KPOZLO3r34vSCZGw'
+            })*/
 
       await Mail.send((message) => {
         message
@@ -134,12 +133,18 @@ export default class UsersController {
       })
     }
     const token = await auth.use('api').generate(user)
-
-    return response.ok({ 'token': token.token })
+    return {
+      'status': 200,
+      'mensaje': 'Usuario logueado correctamente.',
+      'error': [],
+      'data': token,
+    }
   }
 
-  public async infoUserObjeto({ auth, response }) {
-    const user = await auth.authenticate()
-    return response.ok(user)
+
+  public async infoUserObjeto({ auth }) {
+    if (await auth.use('basic').authenticate()) {
+      return 'ok'
+    }
   }
 }

@@ -100,7 +100,7 @@ const authConfig: AuthConfig = {
         | that time.
         |
         */
-        model: () => import('App/Models/TokenHeader'),
+        model: () => import('App/Models/Token'),
       },
     },
     /*
@@ -163,7 +163,7 @@ const authConfig: AuthConfig = {
         | that time.
         |
         */
-        model: () => import('App/Models/TokenHeader'),
+        model: () => import('App/Models/Token'),
       },
     },
   },
