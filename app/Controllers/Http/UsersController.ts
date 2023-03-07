@@ -5,6 +5,7 @@ import User from 'App/Models/User'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
+import axios from 'axios'
 const local = 'http://127.0.0.1:3333'
 
 
@@ -46,18 +47,29 @@ export default class UsersController {
     }
     return 'error'
   }
+
+
   public async verify({ request, params, response }: HttpContextContract) {
     if (!request.hasValidSignature()) {
       response.abort('Invalid signature', 401)
     }
-    console.log(params.id)
     const user = await User.findOrFail(params.id)
     const nRandom = Math.floor(Math.random() * 9000) + 1000
 
     user.codigo = nRandom
     if (await user.save()) {
+
       const url = local + Route.makeSignedUrl('codigo', { id: user.id },
         { expiresIn: '1 day' })
+/*
+      axios.post('https://rest.nexmo.com/sms/json', {
+        from: 'Nexmo',
+        to: '528714733996',
+        text: 'Tu codigo de verificacion es: ' + nRandom,
+        api_key: '22bd2a4a',
+        api_secret: 'KPOZLO3r34vSCZGw'
+      })*/
+
       await Mail.send((message) => {
         message
           .from('abelardoreyes256@gmail.com')
@@ -67,17 +79,30 @@ export default class UsersController {
       })
     }
   }
-  public async codigo({ request, params, response }: HttpContextContract) {
+
+
+  public async codigo({ request, params }: HttpContextContract) {
     const user = await User.findOrFail(params.id)
     const codigoUsuario = user.codigo
     if (codigoUsuario == request.input('codigo')) {
       user.activo = true
       if (await user.save()) {
-        return 'ok'
+        return [{
+          "status": 200,
+          "mensaje": "Usuario activado correctamente.",
+          "error": [],
+          "data": []
+        }, 200]
+      } else {
+        return [{
+          "status": 400,
+          "mensaje": "Error al activar usuario.",
+          "error": [],
+          "data": []
+        }, 400]
       }
     }
   }
-
 
 
   public async login({ auth, request, response }) {
@@ -87,28 +112,34 @@ export default class UsersController {
     })
     const payload = await request.validate({ schema: validarLogin })
 
-    if (payload) {
-      const user = await User.query().where('email', request.input('email')).where('activo', '1').first()
-      if (!user) {
-        return response.badRequest({
-          'status': 400,
-          'mensaje': 'No existe ningún usuario con este correo o su cuenta está desactivada.',
-          'error': [],
-          'data': [],
-        })
-      }
-
-      if (!await Hash.verify(user.password, request.input('password'))) {
-        return response.badRequest({
-          'status': 400,
-          'mensaje': 'Credenciales de usuario incorrectas.',
-          'error': [],
-          'data': [],
-        })
-      }
-      const token = await auth.use('api').generate(user)
-
-      return response.ok({ 'token': token.token })
+    if (!payload) {
+      return response.badRequest('Invalido')
     }
+    const user = await User.query().where('email', request.input('email')).where('activo', '1').first()
+    if (!user) {
+      return response.badRequest({
+        'status': 400,
+        'mensaje': 'No existe ningún usuario con este correo o su cuenta está desactivada.',
+        'error': [],
+        'data': [],
+      })
+    }
+
+    if (!await Hash.verify(user.password, request.input('password'))) {
+      return response.badRequest({
+        'status': 400,
+        'mensaje': 'Credenciales de usuario incorrectas.',
+        'error': [],
+        'data': [],
+      })
+    }
+    const token = await auth.use('api').generate(user)
+
+    return response.ok({ 'token': token.token })
+  }
+
+  public async infoUserObjeto({ auth, response }) {
+    const user = await auth.authenticate()
+    return response.ok(user)
   }
 }

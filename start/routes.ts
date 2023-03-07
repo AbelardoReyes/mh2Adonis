@@ -24,6 +24,8 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.post('/usuario/crear', 'UsersController.registrarUsuario')
 Route.post('/usuario/login', 'UsersController.login')
 
+Route.get('/usuario/infoObjeto', 'UsersController.obtenerUsuarios').middleware('auth')
+
 Route.get('/verify/:id', 'UsersController.verify').as('verify')
 Route.post('/codigo/:id', 'UsersController.codigo').as('codigo')
 
