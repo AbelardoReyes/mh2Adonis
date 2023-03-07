@@ -21,7 +21,10 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 
-Route.post('/', 'UsersController.registrarUsuario')
+Route.post('/usuario/crear', 'UsersController.registrarUsuario')
+Route.post('/usuario/login', 'UsersController.login')
+
+Route.get('/verify/:id', 'UsersController.verify').as('verify')
 
 Route.post('/chef', 'ChefsController.registrarChef')
 Route.get('/chef', 'ChefsController.obtenerChefs')
