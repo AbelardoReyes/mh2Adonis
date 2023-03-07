@@ -1,5 +1,4 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
 
 export default class Role {
   public async handle ({ auth, response }: HttpContextContract, next: () => Promise<void>, allowedRoles: string[]) {
@@ -16,4 +15,5 @@ export default class Role {
     }
     await next()
   }
+
 }

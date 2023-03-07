@@ -153,4 +153,9 @@ export default class UsersController {
     await auth.use('api').revoke()
     return response.ok({ 'status': 200, 'mensaje': 'Sesión cerrada correctamente.', 'error': [], 'data': [] })
   }
+
+  public async verUsuarios({ response }) {
+    const usuarios = await User.all()
+    return response.ok(usuarios)
+  }
 }
