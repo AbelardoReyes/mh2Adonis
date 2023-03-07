@@ -55,7 +55,27 @@ export default class UsersController {
     const nRandom = Math.floor(Math.random() * 9000) + 1000
 
     user.codigo = nRandom
-    await user.save()
+    if (await user.save()) {
+      const url = local + Route.makeSignedUrl('codigo', { id: user.id },
+        { expiresIn: '1 day' })
+      await Mail.send((message) => {
+        message
+          .from('abelardoreyes256@gmail.com')
+          .to(user.email)
+          .subject('Welcome Onboard!')
+          .htmlView('emails/correo_enviado', { name: user.name, nRandom: nRandom, url: url })
+      })
+    }
+  }
+  public async codigo({ request, params, response }: HttpContextContract) {
+    const user = await User.findOrFail(params.id)
+    const codigoUsuario = user.codigo
+    if (codigoUsuario == request.input('codigo')) {
+      user.activo = true
+      if (await user.save()) {
+        return 'ok'
+      }
+    }
   }
 
 
