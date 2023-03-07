@@ -142,4 +142,15 @@ export default class UsersController {
     const user = await auth.authenticate()
     return response.ok(user)
   }
+
+  public async infoUser({ auth, response }) {
+    const user = await auth.authenticate()
+    const infoUser = await User.query().where('id', user.id).first()
+    return response.ok(infoUser)
+  }
+
+  public async logout({ auth, response }) {
+    await auth.use('api').revoke()
+    return response.ok({ 'status': 200, 'mensaje': 'Sesión cerrada correctamente.', 'error': [], 'data': [] })
+  }
 }
