@@ -5,6 +5,8 @@ import User from 'App/Models/User'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
+import { Queue } from 'bullmq'
+
 const local = 'http://127.0.0.1:3333'
 
 export default class UsersController {

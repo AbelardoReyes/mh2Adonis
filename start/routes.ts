@@ -40,7 +40,7 @@ Route.get('/verify/:id', 'UsersController.verify').as('verify')
 Route.post('/codigo/:id', 'UsersController.codigo').as('codigo')
 
 Route.post('/chef', 'ChefsController.registrarChef').middleware('checkRole:1')
-Route.get('/chef', 'ChefsController.obtenerChefs').middleware('checkRole:1')
+Route.get('/chef', 'ChefsController.obtenerChefs').middleware('activo')
 Route.get('/chef/:id', 'ChefsController.obtenerChef')
 Route.put('/chef/:id', 'ChefsController.actualizarChef')
 Route.delete('/chef/:id', 'ChefsController.eliminarChef')
