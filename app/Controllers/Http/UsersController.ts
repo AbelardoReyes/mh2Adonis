@@ -230,8 +230,21 @@ export default class UsersController {
     })
   }
 
-  public async verUsuarios({ response }) {
-    const usuarios = await User.all()
-    return response.ok(usuarios)
+  public async updateUser({ request }) {
+    const modificar = schema.create({
+      name: schema.string(),
+      ap_paterno: schema.string(),
+      ap_materno: schema.string(),
+      activo: schema.boolean(),
+    })
+    const payload = await request.validate({ schema: modificar })
+    if (!payload) {
+      return 'Error'
+    }
+  }
+
+  public async infoIDUser({ params }) {
+    const user = await User.findOrFail(params.id)
+    return user
   }
 }
