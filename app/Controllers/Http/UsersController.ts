@@ -5,11 +5,7 @@ import User from 'App/Models/User'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
-import axios from 'axios'
 const local = 'http://127.0.0.1:3333'
-
-
-
 
 export default class UsersController {
   public async registrarUsuario({ request }: HttpContextContract) {
@@ -22,32 +18,33 @@ export default class UsersController {
       telefono: schema.string(),
     })
     const payload = await request.validate({ schema: newPostSchema })
-    if (payload) {
-      const user = new User()
-      user.name = request.input('name')
-      user.email = request.input('email')
-      user.password = await Hash.make(request.input('password'))
-      user.ap_materno = request.input('ap_materno')
-      user.ap_paterno = request.input('ap_paterno')
-      user.telefono = request.input('telefono')
-
-      if (await user.save()) {
-        const url = local + Route.makeSignedUrl('verify', { id: user.id },
-          { expiresIn: '1 day' })
-        await Mail.send((message) => {
-          message
-            .from('abelardoreyes256@gmail.com')
-            .to(user.email)
-            .subject('Welcome Onboard!')
-            .htmlView('emails/welcome', { name: user.name, url: url })
-        })
-        return 'ok'
-      }
-
+    if (!payload) {
+      return 'Error'
     }
-    return 'error'
-  }
+    const user = new User()
+    user.name = request.input('name')
+    user.email = request.input('email')
+    user.password = await Hash.make(request.input('password'))
+    user.ap_materno = request.input('ap_materno')
+    user.ap_paterno = request.input('ap_paterno')
+    user.telefono = request.input('telefono')
+    user.activo = false
+    user.role_id = 2
 
+    if (await user.save()) {
+      const url = local + Route.makeSignedUrl('verify', { id: user.id },
+        { expiresIn: '1 day' })
+      await Mail.send((message) => {
+        message
+          .from('abelardoreyes256@gmail.com')
+          .to(user.email)
+          .subject('Welcome Onboard!')
+          .htmlView('emails/welcome', { name: user.name, url: url })
+      })
+      return 'ok'
+    }
+
+  }
 
   public async verify({ request, params, response }: HttpContextContract) {
     if (!request.hasValidSignature()) {
@@ -61,14 +58,14 @@ export default class UsersController {
 
       const url = local + Route.makeSignedUrl('codigo', { id: user.id },
         { expiresIn: '1 day' })
-/*
-      axios.post('https://rest.nexmo.com/sms/json', {
-        from: 'Nexmo',
-        to: '528714733996',
-        text: 'Tu codigo de verificacion es: ' + nRandom,
-        api_key: '22bd2a4a',
-        api_secret: 'KPOZLO3r34vSCZGw'
-      })*/
+      /*
+            axios.post('https://rest.nexmo.com/sms/json', {
+              from: 'Nexmo',
+              to: '528714733996',
+              text: 'Tu codigo de verificacion es: ' + nRandom,
+              api_key: '22bd2a4a',
+              api_secret: 'KPOZLO3r34vSCZGw'
+            })*/
 
       await Mail.send((message) => {
         message
@@ -79,7 +76,6 @@ export default class UsersController {
       })
     }
   }
-
 
   public async codigo({ request, params }: HttpContextContract) {
     const user = await User.findOrFail(params.id)
@@ -110,6 +106,8 @@ export default class UsersController {
       email: schema.string(),
       password: schema.string(),
     })
+    const email = request.body().email
+    const password = request.body().password
     const payload = await request.validate({ schema: validarLogin })
 
     if (!payload) {
@@ -133,25 +131,103 @@ export default class UsersController {
         'data': [],
       })
     }
-    const token = await auth.use('api').generate(user)
-
-    return response.ok({ 'token': token.token })
-  }
-
-  public async infoUserObjeto({ auth, response }) {
-    const user = await auth.authenticate()
-    return response.ok(user)
-  }
-
-  public async infoUser({ auth, response }) {
-    const user = await auth.authenticate()
-    const infoUser = await User.query().where('id', user.id).first()
-    return response.ok(infoUser)
+    const token = await auth.use('api').attempt(email, password, {
+      expiresIn: '1 days',
+    })
+    return {
+      'status': 200,
+      'mensaje': 'Usuario logueado correctamente.',
+      'error': [],
+      'data': token,
+    }
   }
 
   public async logout({ auth, response }) {
     await auth.use('api').revoke()
     return response.ok({ 'status': 200, 'mensaje': 'Sesión cerrada correctamente.', 'error': [], 'data': [] })
+  }
+
+  public async infoUserObjeto({ auth }) {
+    const user = await auth.authenticate()
+    const infoUser = await User.query().where('id', user.id).first()
+    return infoUser
+  }
+
+  public async infoUser({ auth, response }) {
+    if (auth.user) {
+      const user = await auth.authenticate()
+      const infoUser = await User.query().where('id', user.id).first()
+      return infoUser
+    } else {
+      return response.badRequest({
+        'status': 401,
+        'mensaje': 'No existe ningún usuario con este correo o su cuenta está desactivada.',
+        'error': [],
+        'data': [],
+      })
+    }
+  }
+
+  public async infoUsuario({ }) {
+    const user = await User.all()
+    return user
+  }
+
+  public async recuperarCuenta({ request, response }) {
+    const recuperarCuenta = schema.create({
+
+      email: schema.string(),
+    })
+    const payload = await request.validate({ schema: recuperarCuenta })
+    if (!payload) {
+      return response.badRequest('Invalido')
+    }
+    const user = await User.query().where('email', request.input('email')).first()
+    if (!user) {
+      return response.badRequest({
+        'status': 401,
+        'mensaje': 'No existe ningún usuario con este correo.',
+        'error': [],
+        'data': [],
+      })
+    }
+    const url = local + Route.makeSignedUrl('verify', { id: user.id },
+      { expiresIn: '1 day' })
+
+    await Mail.send((message) => {
+      message
+        .from('abelardoreyes256@gmail.com')
+        .to(user.email)
+        .subject('Welcome Onboard!')
+        .htmlView('emails/welcome', { name: user.name, url: url })
+    })
+  }
+
+  public async cambiarPassword({ request, response }) {
+    const recuperarPassword = schema.create({
+
+      email: schema.string(),
+    })
+    const payload = await request.validate({ schema: recuperarPassword })
+    if (!payload) {
+      return response.badRequest('Invalido')
+    }
+    const user = await User.query().where('email', request.input('email')).first()
+    if (!user) {
+      return response.badRequest({
+        'status': 401,
+        'mensaje': 'No existe ningún usuario con este correo.',
+        'error': [],
+        'data': [],
+      })
+    }
+    await Mail.send((message) => {
+      message
+        .from('abelardoreyes256@gmail.com')
+        .to(user.email)
+        .subject('Welcome Onboard!')
+        .htmlView('emails/cambio_password', { name: user.name })
+    })
   }
 
   public async verUsuarios({ response }) {
