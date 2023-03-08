@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Receta from 'App/Models/Receta'
+import Chef from 'App/Models/Chef'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class RecetasController {
@@ -91,5 +92,11 @@ export default class RecetasController {
       response.status(404).send({ message: 'Receta no encontrada' })
     }
   }
+
+  async getChefs({ response }) {
+    const chefs = await Chef.query().select('id', 'nombre').exec();
+    return response.status(200).json(chefs);
+  }
+
 
 }

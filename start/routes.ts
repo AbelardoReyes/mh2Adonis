@@ -57,6 +57,7 @@ Route.group(() => {
   Route.get('/receta/info/:id', 'RecetasController.obtenerReceta').middleware('checkRole:1,2')
   Route.put('/receta/update/:id', 'RecetasController.actualizarReceta').middleware('checkRole:1,2')
   Route.delete('/receta/delete/:id', 'RecetasController.eliminarReceta').middleware('checkRole:1')
+  Route.get('/receta/chefs', 'RecetasController.getChefs').middleware('checkRole:1,2')
   //ingredientes
   Route.post('/ingrediente', 'IngredientesController.registrarIngrediente').middleware('checkRole:1,2')
   Route.get('/ingrediente/info', 'IngredientesController.obtenerIngredientes').middleware('checkRole:1,2,3')

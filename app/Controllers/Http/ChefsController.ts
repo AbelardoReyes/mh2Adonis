@@ -38,7 +38,7 @@ export default class ChefsController {
         await chef.save()
         const respuesta = {
             status: 200,
-            message: 'Chef registrado',
+            mgs: 'Chef registrado',
             data: chef,
             error: false
         }
