@@ -1,14 +1,14 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class Role {
-  public async handle ({ auth, response }: HttpContextContract, next: () => Promise<void>, allowedRoles: string[]) {
+  public async handle ({ auth, response }: HttpContextContract, next: () => Promise<void>, allowedRoles: Int16Array[]) {
     const user = auth.user
 
     if (!user) {
       return response.unauthorized({ error: 'Usuario no autorizado' })
     }
 
-    const userRole = user.role_id.toString()
+    const userRole = user.role_id
 
     if (!allowedRoles.includes(userRole)) {
       return response.forbidden({ error: 'Rol no autorizado' })
