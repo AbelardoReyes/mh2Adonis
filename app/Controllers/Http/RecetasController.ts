@@ -69,7 +69,7 @@ export default class RecetasController {
         'nombre.required': 'El nombre es requerido',
         'duracion.required': 'La duracion es requerida',
         'preparacion.required': 'La preparacion es requerida',
-        'chef_id.required': 'El chef es requerido',
+        'chef.required': 'El chef es requerido',
       },
     })
     if (!data){
