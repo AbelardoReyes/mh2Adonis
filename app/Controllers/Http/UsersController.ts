@@ -6,9 +6,6 @@ import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
 const local = 'http://127.0.0.1:3333'
-const Jwt = require('jsonwebtoken')
-
-
 
 export default class UsersController {
   public async registrarUsuario({ request }: HttpContextContract) {
@@ -21,32 +18,33 @@ export default class UsersController {
       telefono: schema.string(),
     })
     const payload = await request.validate({ schema: newPostSchema })
-    if (payload) {
-      const user = new User()
-      user.name = request.input('name')
-      user.email = request.input('email')
-      user.password = await Hash.make(request.input('password'))
-      user.ap_materno = request.input('ap_materno')
-      user.ap_paterno = request.input('ap_paterno')
-      user.telefono = request.input('telefono')
-
-      if (await user.save()) {
-        const url = local + Route.makeSignedUrl('verify', { id: user.id },
-          { expiresIn: '1 day' })
-        await Mail.send((message) => {
-          message
-            .from('abelardoreyes256@gmail.com')
-            .to(user.email)
-            .subject('Welcome Onboard!')
-            .htmlView('emails/welcome', { name: user.name, url: url })
-        })
-        return 'ok'
-      }
-
+    if (!payload) {
+      return 'Error'
     }
-    return 'error'
-  }
+    const user = new User()
+    user.name = request.input('name')
+    user.email = request.input('email')
+    user.password = await Hash.make(request.input('password'))
+    user.ap_materno = request.input('ap_materno')
+    user.ap_paterno = request.input('ap_paterno')
+    user.telefono = request.input('telefono')
+    user.activo = false
+    user.role_id = 2
 
+    if (await user.save()) {
+      const url = local + Route.makeSignedUrl('verify', { id: user.id },
+        { expiresIn: '1 day' })
+      await Mail.send((message) => {
+        message
+          .from('abelardoreyes256@gmail.com')
+          .to(user.email)
+          .subject('Welcome Onboard!')
+          .htmlView('emails/welcome', { name: user.name, url: url })
+      })
+      return 'ok'
+    }
+
+  }
 
   public async verify({ request, params, response }: HttpContextContract) {
     if (!request.hasValidSignature()) {
@@ -78,7 +76,6 @@ export default class UsersController {
       })
     }
   }
-
 
   public async codigo({ request, params }: HttpContextContract) {
     const user = await User.findOrFail(params.id)
@@ -145,21 +142,92 @@ export default class UsersController {
     }
   }
 
-
-  public async infoUserObjeto({ auth }) {
-    await auth.use('api').authenticate()
-    console.log(auth.use('api').user!)
-  }
-
-  public async infoUser({ auth, response }) {
-    const user = await auth.authenticate()
-    const infoUser = await User.query().where('id', user.id).first()
-    return response.ok(infoUser)
-  }
-
   public async logout({ auth, response }) {
     await auth.use('api').revoke()
     return response.ok({ 'status': 200, 'mensaje': 'Sesión cerrada correctamente.', 'error': [], 'data': [] })
+  }
+
+  public async infoUserObjeto({ auth }) {
+    const user = await auth.authenticate()
+    const infoUser = await User.query().where('id', user.id).first()
+    return infoUser
+  }
+
+  public async infoUser({ auth, response }) {
+    if (auth.user) {
+      const user = await auth.authenticate()
+      const infoUser = await User.query().where('id', user.id).first()
+      return infoUser
+    } else {
+      return response.badRequest({
+        'status': 401,
+        'mensaje': 'No existe ningún usuario con este correo o su cuenta está desactivada.',
+        'error': [],
+        'data': [],
+      })
+    }
+  }
+
+  public async infoUsuario({ }) {
+    const user = await User.all()
+    return user
+  }
+
+  public async recuperarCuenta({ request, response }) {
+    const recuperarCuenta = schema.create({
+
+      email: schema.string(),
+    })
+    const payload = await request.validate({ schema: recuperarCuenta })
+    if (!payload) {
+      return response.badRequest('Invalido')
+    }
+    const user = await User.query().where('email', request.input('email')).first()
+    if (!user) {
+      return response.badRequest({
+        'status': 401,
+        'mensaje': 'No existe ningún usuario con este correo.',
+        'error': [],
+        'data': [],
+      })
+    }
+    const url = local + Route.makeSignedUrl('verify', { id: user.id },
+      { expiresIn: '1 day' })
+
+    await Mail.send((message) => {
+      message
+        .from('abelardoreyes256@gmail.com')
+        .to(user.email)
+        .subject('Welcome Onboard!')
+        .htmlView('emails/welcome', { name: user.name, url: url })
+    })
+  }
+
+  public async cambiarPassword({ request, response }) {
+    const recuperarPassword = schema.create({
+
+      email: schema.string(),
+    })
+    const payload = await request.validate({ schema: recuperarPassword })
+    if (!payload) {
+      return response.badRequest('Invalido')
+    }
+    const user = await User.query().where('email', request.input('email')).first()
+    if (!user) {
+      return response.badRequest({
+        'status': 401,
+        'mensaje': 'No existe ningún usuario con este correo.',
+        'error': [],
+        'data': [],
+      })
+    }
+    await Mail.send((message) => {
+      message
+        .from('abelardoreyes256@gmail.com')
+        .to(user.email)
+        .subject('Welcome Onboard!')
+        .htmlView('emails/cambio_password', { name: user.name })
+    })
   }
 
   public async verUsuarios({ response }) {
