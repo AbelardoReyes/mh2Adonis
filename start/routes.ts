@@ -69,7 +69,7 @@ Route.group(() => {
   Route.get('/objetos', 'ObjetosController.obtenerObjetos').middleware('checkRole:1,2,3')
   Route.get('/objetos/:id', 'ObjetosController.obtenerObjeto').middleware('checkRole:1,2')
   Route.put('/objetos/modificar/:id', 'ObjetosController.actualizarObjeto').middleware('checkRole:1,2')
-  Route.delete('/objetoseliminar/id', 'ObjetosController.eliminarObjeto').middleware('checkRole:1')
+  Route.delete('/objetoseliminar/:id', 'ObjetosController.eliminarObjeto').middleware('checkRole:1')
   //Mapas
   Route.post('/mapas/insertar', 'MapasController.registrarMapa').middleware('checkRole:1,2')
   Route.get('/mapas', 'MapasController.obtenerMapas').middleware('checkRole:1,2,3')
