@@ -14,8 +14,8 @@ export default class Receta extends BaseModel {
   @column({ columnName: 'duracion', serialize: value => value.charAt(0).toUpperCase() + value.slice(1), consume: value => value.toLowerCase() })
   public duracion: string
 
-  @column({ columnName: 'chef_id' })
-  public chef_id: number
+  @column({ columnName: 'chef' })
+  public chef: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

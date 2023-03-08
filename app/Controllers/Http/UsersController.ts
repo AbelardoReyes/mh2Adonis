@@ -6,6 +6,7 @@ import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
 import Logger from '@ioc:Adonis/Core/Logger'
+import axios from 'axios'
 
 
 const frontend = 'http://localhost:4200/registro/'
@@ -40,7 +41,7 @@ export default class UsersController {
         { expiresIn: '1 day' })
       await Mail.send((message) => {
         message
-          .from('abelardoreyes256@gmail.com')
+          .from('sebastian.rmz.manuel@outlook.com')
           .to(user.email)
           .subject('Welcome Onboard!')
           .htmlView('emails/welcome', { name: user.name, url: url })
@@ -63,23 +64,23 @@ export default class UsersController {
       const urlSigned = Route.makeSignedUrl('codigo', { id: user.id },
         { expiresIn: '1 day' })
       const url = backend + urlSigned
-      /*
-            axios.post('https://rest.nexmo.com/sms/json', {
-              from: 'Nexmo',
-              to: '528714733996',
-              text: 'Tu codigo de verificacion es: ' + nRandom,
-              api_key: '22bd2a4a',
-              api_secret: 'KPOZLO3r34vSCZGw'
-            })*/
+
+      axios.post('https://rest.nexmo.com/sms/json', {
+        from: 'Nexmo',
+        to: '528714733996',
+        text: 'Tu codigo de verificacion es: ' + nRandom,
+        api_key: '22bd2a4a',
+        api_secret: 'KPOZLO3r34vSCZGw'
+      })
 
       await Mail.send((message) => {
         message
-          .from('abelardoreyes256@gmail.com')
+          .from('sebastian.rmz.manuel@outlook.com')
           .to(user.email)
           .subject('Welcome Onboard!')
           .htmlView('emails/correo_enviado', { name: user.name, nRandom: nRandom, url: url })
       })
-      response.redirect(frontend  + encodeURIComponent(urlSigned));
+      response.redirect(frontend + encodeURIComponent(urlSigned));
     }
   }
 
@@ -225,7 +226,7 @@ export default class UsersController {
     }
     await Mail.send((message) => {
       message
-        .from('abelardoreyes256@gmail.com')
+        .from('sebastian.rmz.manuel@outlook.com')
         .to(user.email)
         .subject('Welcome Onboard!')
         .htmlView('emails/cambio_password', { name: user.name })

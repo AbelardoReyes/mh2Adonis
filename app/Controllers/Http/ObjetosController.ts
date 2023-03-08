@@ -45,8 +45,8 @@ export default class ObjetosController {
   }
   }
   public async obtenerObjetos({ response }: HttpContextContract) {
-    const objetos = await Objetos.all()
-    response.send(objetos)
+    const objeto = await Objetos.all()
+    response.send(objeto)
   }
   public async obtenerObjeto({ params, response }: HttpContextContract) {
     const objeto = await Objetos.find(params.id)
