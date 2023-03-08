@@ -5,9 +5,11 @@ import User from 'App/Models/User'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { Queue } from 'bullmq'
+import Logger from '@ioc:Adonis/Core/Logger'
 
-const local = 'http://127.0.0.1:3333'
+
+const frontend = 'http://localhost:4200/registro/'
+const backend = 'http://127.0.0.1:3333'
 
 export default class UsersController {
   public async registrarUsuario({ request }: HttpContextContract) {
@@ -34,7 +36,7 @@ export default class UsersController {
     user.rol_id = 2
 
     if (await user.save()) {
-      const url = local + Route.makeSignedUrl('verify', { id: user.id },
+      const url = backend + Route.makeSignedUrl('verify', { id: user.id },
         { expiresIn: '1 day' })
       await Mail.send((message) => {
         message
@@ -60,7 +62,7 @@ export default class UsersController {
 
       const urlSigned = Route.makeSignedUrl('codigo', { id: user.id },
         { expiresIn: '1 day' })
-      const rutaCompleta = local + urlSigned
+      const url = backend + urlSigned
       /*
             axios.post('https://rest.nexmo.com/sms/json', {
               from: 'Nexmo',
@@ -75,13 +77,14 @@ export default class UsersController {
           .from('abelardoreyes256@gmail.com')
           .to(user.email)
           .subject('Welcome Onboard!')
-          .htmlView('emails/correo_enviado', { name: user.name, nRandom: nRandom, url: rutaCompleta })
+          .htmlView('emails/correo_enviado', { name: user.name, nRandom: nRandom, url: url })
       })
-      response.redirect('localhost:4200')
+      response.redirect(frontend  + encodeURIComponent(urlSigned));
     }
   }
 
   public async codigo({ request, params }: HttpContextContract) {
+    Logger.info(params.id)
     const user = await User.findOrFail(params.id)
     const codigoUsuario = user.codigo
     if (codigoUsuario == request.input('codigo')) {
@@ -190,7 +193,7 @@ export default class UsersController {
         'data': [],
       })
     }
-    const url = local + Route.makeSignedUrl('verify', { id: user.id },
+    const url = backend + Route.makeSignedUrl('verify', { id: user.id },
       { expiresIn: '1 day' })
 
     await Mail.send((message) => {
