@@ -1,9 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Chef from 'App/Models/Chef'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class ChefsController {
     public async registrarChef({ request, response }: HttpContextContract) {
+      Logger.info('Registrando chef')
         const newPostSchema = schema.create({
             nombre: schema.string({ trim: true }, [
                 rules.required(),
