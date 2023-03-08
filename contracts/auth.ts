@@ -68,4 +68,19 @@ declare module '@ioc:Adonis/Addons/Auth' {
       client: OATClientContract<'user'>
     }
   }
+  export interface User {
+    id: number;
+    name: string;
+    email: string;
+    role_id: number;
+    // Otras propiedades que necesites
+  }
+  export interface AuthContract {
+    // Métodos y propiedades de AuthContract
+    // ...
+
+    // Agregar el método getUser
+    getUser(): Promise<User> | null;
+  }
+
 }
