@@ -34,12 +34,13 @@ Route.get('/usuario/info/:id', 'UsersController.infoIDUser').middleware('auth').
 Route.put('/usuario/update/:id', 'UsersController.updateUser').middleware('auth').where('id', '[0-9]+')
 Route.put('/usuario/updateRole/:id', 'UsersController.soloRol').middleware('auth').where('id', '[0-9]+')
 Route.put('/usuario/desactivar/:id', 'UsersController.desactivar').middleware('auth').where('id', '[0-9]+')
+Route.get('/usuario/validarToken', 'UsersController.validarToken').middleware('auth')
 
 Route.get('/verify/:id', 'UsersController.verify').as('verify')
 Route.post('/codigo/:id', 'UsersController.codigo').as('codigo')
 
-Route.post('/chef', 'ChefsController.registrarChef').middleware('checkRole:1')
-Route.get('/chef', 'ChefsController.obtenerChefs').middleware('checkRole:1')
+Route.post('/chef', 'ChefsController.registrarChef')
+Route.get('/chef', 'ChefsController.obtenerChefs')
 Route.get('/chef/:id', 'ChefsController.obtenerChef')
 Route.put('/chef/:id', 'ChefsController.actualizarChef')
 Route.delete('/chef/:id', 'ChefsController.eliminarChef')

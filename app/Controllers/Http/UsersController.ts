@@ -29,7 +29,7 @@ export default class UsersController {
     user.ap_paterno = request.input('ap_paterno')
     user.telefono = request.input('telefono')
     user.activo = false
-    user.role_id = 2
+    user.rol_id = 2
 
     if (await user.save()) {
       const url = local + Route.makeSignedUrl('verify', { id: user.id },
@@ -134,12 +134,7 @@ export default class UsersController {
     const token = await auth.use('api').attempt(email, password, {
       expiresIn: '1 days',
     })
-    return {
-      'status': 200,
-      'mensaje': 'Usuario logueado correctamente.',
-      'error': [],
-      'data': token,
-    }
+    return { 'token': token.token }
   }
 
   public async logout({ auth, response }) {
@@ -249,7 +244,7 @@ export default class UsersController {
     await user.save()
   }
 
-  public async soloRol({ params,request }) {
+  public async soloRol({ params, request }) {
     const modificar = schema.create({
       rol_id: schema.number(),
     })
@@ -258,7 +253,7 @@ export default class UsersController {
       return 'Error'
     }
     const user = await User.findOrFail(params.id)
-    user.role_id = request.input('rol_id')
+    user.rol_id = request.input('rol_id')
     await user.save()
   }
 
@@ -273,6 +268,14 @@ export default class UsersController {
     const user = await User.findOrFail(params.id)
     user.activo = request.input('activo')
     await user.save()
+  }
+
+  public async validarToken({ auth }) {
+    if (auth.user) {
+      return true
+    } else {
+      return false
+    }
   }
 
   public async infoIDUser({ params }) {

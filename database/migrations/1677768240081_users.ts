@@ -14,7 +14,7 @@ export default class extends BaseSchema {
       table.integer('codigo').defaultTo(0)
       table.boolean('activo').defaultTo(false)
       table.string('email', 50).notNullable().unique()
-      table.integer('role_id').unsigned().references('id').inTable('roles').onDelete('CASCADE')
+      table.integer('rol_id').unsigned().references('id').inTable('roles').onDelete('CASCADE')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

@@ -10,7 +10,7 @@ export default class extends BaseSeeder {
         ap_materno: 'admin',
         ap_paterno: 'admin',
         telefono: '8712117940',
-        role_id: 1,
+        rol_id: 1,
       },
     )
   }

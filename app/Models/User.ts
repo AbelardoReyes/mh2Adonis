@@ -29,8 +29,8 @@ export default class User extends BaseModel {
   @column({ columnName: 'email'})
   public email: string
 
-  @column({ columnName: 'role_id'})
-  public role_id: number
+  @column({ columnName: 'rol_id'})
+  public rol_id: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
