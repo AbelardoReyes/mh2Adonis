@@ -26,16 +26,8 @@
     "@adonisjs/view",
     "@adonisjs/auth",
     "@adonisjs/bodyparser",
-    "@adonisjs/session",
-    "@adonisjs/validator",
-    "@adonisjs/antl",
-    "@adonisjs/drive",
-    "@adonisjs/redis",
-    "@adonisjs/cors",
-    "@adonisjs/websocket",
-    "@adonisjs/ace",
-    "@adonisjs/repl",
-    "@adonisjs/websocket/providers/WsProvider"
+    "@adonisjs/validator"
+
 
   ],
   "aceProviders": [
