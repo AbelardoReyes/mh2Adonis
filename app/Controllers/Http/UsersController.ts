@@ -56,8 +56,9 @@ export default class UsersController {
     user.codigo = nRandom
     if (await user.save()) {
 
-      const url = local + Route.makeSignedUrl('codigo', { id: user.id },
+      const urlSigned = Route.makeSignedUrl('codigo', { id: user.id },
         { expiresIn: '1 day' })
+      const rutaCompleta = local + urlSigned
       /*
             axios.post('https://rest.nexmo.com/sms/json', {
               from: 'Nexmo',
@@ -72,8 +73,9 @@ export default class UsersController {
           .from('abelardoreyes256@gmail.com')
           .to(user.email)
           .subject('Welcome Onboard!')
-          .htmlView('emails/correo_enviado', { name: user.name, nRandom: nRandom, url: url })
+          .htmlView('emails/correo_enviado', { name: user.name, nRandom: nRandom, url: rutaCompleta })
       })
+      response.redirect('localhost:4200')
     }
   }
 
