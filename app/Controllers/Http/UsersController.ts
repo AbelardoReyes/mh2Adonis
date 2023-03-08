@@ -1,7 +1,7 @@
 import { schema } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-//import { Queue, Worker } from 'bullmq'
+import { Queue, Worker } from 'bullmq'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
@@ -38,13 +38,18 @@ export default class UsersController {
     if (await user.save()) {
       const url = backend + Route.makeSignedUrl('verify', { id: user.id },
         { expiresIn: '1 day' })
-      await Mail.send((message) => {
+
+      const queue= new Queue('email')
+      const job = await queue.add('send-email',  { email:user.email , name: user.name, url:url })
+
+
+      /*await Mail.send((message) => {
         message
           .from('abelardoreyes256@gmail.com')
           .to(user.email)
           .subject('Welcome Onboard!')
           .htmlView('emails/welcome', { name: user.name, url: url })
-      })
+      })*/
       return 'ok'
     }
 
