@@ -30,6 +30,8 @@ Route.post('/usuario/logout', 'UsersController.logout').middleware('auth')
 Route.get('/usuario', 'UsersController.infoUsuario').middleware('auth')
 
 Route.get('/usuario/infoObjeto', 'UsersController.infoUserObjeto').middleware('auth')
+Route.get('/usuario/info/:id', 'UsersController.infoIDUser').middleware('auth').where('id', '[0-9]+')
+Route.put('/usuario/update/:id', 'UsersController.updateUser').middleware('auth').where('id', '[0-9]+')
 
 Route.get('/verify/:id', 'UsersController.verify').as('verify')
 Route.post('/codigo/:id', 'UsersController.codigo').as('codigo')
