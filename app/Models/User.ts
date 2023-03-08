@@ -5,35 +5,32 @@ export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column()
+  @column({ columnName: 'name', serialize: value => value.charAt(0).toUpperCase() + value.slice(1), consume: value => value.toLowerCase() })
   public name: string
 
-  @column()
+  @column({ columnName: 'ap_paterno', serialize: value => value.charAt(0).toUpperCase() + value.slice(1), consume: value => value.toLowerCase() })
   public ap_paterno: string
 
-  @column()
+  @column({ columnName: 'ap_materno', serialize: value => value.charAt(0).toUpperCase() + value.slice(1), consume: value => value.toLowerCase() })
   public ap_materno: string
 
-  @column()
+  @column({ columnName: 'password'})
   public password: string
 
-  @column()
+  @column({ columnName: 'telefono'})
   public telefono: string
 
-  @column()
+  @column({ columnName: 'codigo'})
   public codigo: number
 
-  @column()
+  @column({ columnName: 'activo'})
   public activo: boolean
 
-  @column()
+  @column({ columnName: 'email'})
   public email: string
 
-  @column()
+  @column({ columnName: 'role_id'})
   public role_id: number
-
-
-
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

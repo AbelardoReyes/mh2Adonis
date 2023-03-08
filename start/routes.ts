@@ -24,12 +24,12 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.post('/usuario/crear', 'UsersController.registrarUsuario')
 Route.post('/usuario/login', 'UsersController.login')
 
-Route.get('/usuario/infoObjeto', 'UsersController.infoUserObjeto').middleware('auth')
+Route.get('/usuario/infoObjeto', 'UsersController.obtenerUsuarios').middleware('auth')
 
 Route.get('/verify/:id', 'UsersController.verify').as('verify')
 Route.post('/codigo/:id', 'UsersController.codigo').as('codigo')
 
-Route.post('/chef', 'ChefsController.registrarChef')
+Route.post('/chef', 'ChefsController.registrarChef').middleware('checkRole:1')
 Route.get('/chef', 'ChefsController.obtenerChefs')
 Route.get('/chef/:id', 'ChefsController.obtenerChef')
 Route.put('/chef/:id', 'ChefsController.actualizarChef')
