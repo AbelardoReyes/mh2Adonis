@@ -29,7 +29,7 @@ export default class RecetasController {
     receta.nombre = request.input('nombre')
     receta.duracion = request.input('duracion')
     receta.preparacion = request.input('preparacion')
-    receta.chef_id = request.input('chef_id')
+    receta.chef = request.input('chef_id')
     await receta.save()
     const respuesta = {
       status : 200,
@@ -56,7 +56,7 @@ export default class RecetasController {
         rules.required()]),
       duracion: schema.string({ trim: true }, [rules.required()]),
       preparacion: schema.string({ trim: true }, [rules.required()]),
-      chef_id: schema.number([rules.required()]),
+      chef: schema.number([rules.required()]),
     })
     const data = await request.validate({
       schema: newPostSchema,
@@ -64,7 +64,7 @@ export default class RecetasController {
         'nombre.required': 'El nombre es requerido',
         'duracion.required': 'La duracion es requerida',
         'preparacion.required': 'La preparacion es requerida',
-        'chef_id.required': 'El chef es requerido',
+        'chef.required': 'El chef es requerido',
       },
     })
     if (!data){
@@ -75,7 +75,7 @@ export default class RecetasController {
       receta.nombre = request.input('nombre')
       receta.duracion = request.input('duracion')
       receta.preparacion = request.input('preparacion')
-      receta.chef_id = request.input('chef_id')
+      receta.chef = request.input('chef')
       await receta.save()
       response.send(receta)
       }
