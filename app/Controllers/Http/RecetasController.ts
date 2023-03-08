@@ -2,9 +2,14 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Receta from 'App/Models/Receta'
 import Chef from 'App/Models/Chef'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import Logger from '@ioc:Adonis/Core/Logger'
 
 export default class RecetasController {
   public async registrarReceta({ request, response }: HttpContextContract) {
+    Logger.info(request.input('nombre'))
+    Logger.info(request.input('duracion'))
+    Logger.info(request.input('preparacion'))
+    Logger.info(request.input('chef'))
     const newPostSchema = schema.create({
       nombre: schema.string({ trim: true }, [
         rules.required(),
@@ -12,7 +17,7 @@ export default class RecetasController {
       ]),
       duracion: schema.string({ trim: true }, [rules.required()]),
       preparacion: schema.string({ trim: true }, [rules.required()]),
-      chef_id: schema.number([rules.required()]),
+      chef: schema.number([rules.required()]),
     })
     const data = await request.validate({
       schema: newPostSchema,
@@ -29,7 +34,7 @@ export default class RecetasController {
     receta.nombre = request.input('nombre')
     receta.duracion = request.input('duracion')
     receta.preparacion = request.input('preparacion')
-    receta.chef = request.input('chef_id')
+    receta.chef = request.input('chef')
     await receta.save()
     const respuesta = {
       status : 200,

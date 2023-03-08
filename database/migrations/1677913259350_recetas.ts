@@ -9,8 +9,8 @@ export default class extends BaseSchema {
       table.string('nombre', 30)
       table.string('duracion', 40)
       table.text('preparacion')
-      table.integer('chef_id').unsigned()
-      table.foreign('chef_id').references('id').inTable('chefs').onDelete('CASCADE')
+      table.integer('chef').unsigned()
+      table.foreign('chef').references('id').inTable('chefs').onDelete('CASCADE')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
