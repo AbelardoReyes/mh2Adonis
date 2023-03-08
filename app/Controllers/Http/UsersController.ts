@@ -109,6 +109,8 @@ export default class UsersController {
       email: schema.string(),
       password: schema.string(),
     })
+    const email = request.body().email
+    const password = request.body().password
     const payload = await request.validate({ schema: validarLogin })
 
     if (!payload) {
@@ -132,7 +134,9 @@ export default class UsersController {
         'data': [],
       })
     }
-    const token = await auth.use('api').generate(user)
+    const token = await auth.use('api').attempt(email, password, {
+      expiresIn: '1 days',
+    })
     return {
       'status': 200,
       'mensaje': 'Usuario logueado correctamente.',
@@ -143,8 +147,7 @@ export default class UsersController {
 
 
   public async infoUserObjeto({ auth }) {
-    if (await auth.use('basic').authenticate()) {
-      return 'ok'
-    }
+    await auth.use('api').authenticate()
+    console.log(auth.use('api').user!)
   }
 }
