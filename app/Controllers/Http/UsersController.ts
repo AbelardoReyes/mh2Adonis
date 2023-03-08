@@ -230,7 +230,7 @@ export default class UsersController {
     })
   }
 
-  public async updateUser({ request }) {
+  public async updateUser({ request, params }) {
     const modificar = schema.create({
       name: schema.string(),
       ap_paterno: schema.string(),
@@ -241,6 +241,38 @@ export default class UsersController {
     if (!payload) {
       return 'Error'
     }
+    const user = await User.findOrFail(params.id)
+    user.name = request.input('name')
+    user.ap_paterno = request.input('ap_paterno')
+    user.ap_materno = request.input('ap_materno')
+    user.activo = request.input('activo')
+    await user.save()
+  }
+
+  public async soloRol({ params,request }) {
+    const modificar = schema.create({
+      rol_id: schema.number(),
+    })
+    const payload = await request.validate({ schema: modificar })
+    if (!payload) {
+      return 'Error'
+    }
+    const user = await User.findOrFail(params.id)
+    user.role_id = request.input('rol_id')
+    await user.save()
+  }
+
+  public async desactivar({ params, request }) {
+    const modificar = schema.create({
+      activo: schema.boolean(),
+    })
+    const payload = await request.validate({ schema: modificar })
+    if (!payload) {
+      return 'Error'
+    }
+    const user = await User.findOrFail(params.id)
+    user.activo = request.input('activo')
+    await user.save()
   }
 
   public async infoIDUser({ params }) {
