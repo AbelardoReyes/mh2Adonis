@@ -1,4 +1,4 @@
-import { schema } from '@ioc:Adonis/Core/Validator'
+import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 //import { Queue, Worker } from 'bullmq'
@@ -7,15 +7,13 @@ import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
 import Logger from '@ioc:Adonis/Core/Logger'
 import axios from 'axios'
-
-
-const frontend = 'http://localhost:4200/registro/'
-const backend = 'http://127.0.0.1:3333'
+const frontend = 'http://192.168.120.87:4200/registro/'
+const backend = 'http://192.168.120.87:3333'
 
 export default class UsersController {
   public async registrarUsuario({ request }: HttpContextContract) {
     const newPostSchema = schema.create({
-      name: schema.string(),
+      name: schema.string([rules.required()]),
       email: schema.string(),
       password: schema.string(),
       ap_materno: schema.string(),
@@ -114,6 +112,7 @@ export default class UsersController {
       email: schema.string(),
       password: schema.string(),
     })
+    Logger.info(request.body())
     const email = request.body().email
     const password = request.body().password
     const payload = await request.validate({ schema: validarLogin })
