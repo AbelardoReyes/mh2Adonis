@@ -3,6 +3,7 @@ import Receta from 'App/Models/Receta'
 import Chef from 'App/Models/Chef'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Logger from '@ioc:Adonis/Core/Logger'
+import Database from '@ioc:Adonis/Lucid/Database'
 
 export default class RecetasController {
   public async registrarReceta({ request, response }: HttpContextContract) {
@@ -47,8 +48,8 @@ export default class RecetasController {
   }
   }
   public async obtenerRecetas({ response }: HttpContextContract) {
-    const recetas = await Receta.all()
-    response.send(recetas)
+    const recetas = await Database.from('recetas').select('recetas.*').join('chefs', 'recetas.chef', 'chefs.id').select('chefs.nombre as chef')
+    return response.send(recetas)
   }
   public async obtenerReceta({ params, response }: HttpContextContract) {
     const receta = await Receta.find(params.id)

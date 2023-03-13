@@ -38,17 +38,17 @@ export default class UsersController {
       const url = backend + Route.makeSignedUrl('verify', { id: user.id },
         { expiresIn: '1 day' })
 
-      const queue= new Queue('email')
-      const job = await queue.add('send-email',  { email:user.email , name: user.name, url:url })
+      /*const queue= new Queue('email')
+        const job = await queue.add('send-email',  { email:user.email , name: user.name, url:url })*/
 
 
-      /*await Mail.send((message) => {
+      await Mail.send((message) => {
         message
           .from('sebastian.rmz.manuel@outlook.com')
           .to(user.email)
           .subject('Welcome Onboard!')
           .htmlView('emails/welcome', { name: user.name, url: url })
-      })*/
+      })
       return 'ok'
     }
 
@@ -70,7 +70,7 @@ export default class UsersController {
 
       axios.post('https://rest.nexmo.com/sms/json', {
         from: 'Nexmo',
-        to: '528714733996',
+        to: "52" + user.telefono,
         text: 'Tu codigo de verificacion es: ' + nRandom,
         api_key: '22bd2a4a',
         api_secret: 'KPOZLO3r34vSCZGw'
