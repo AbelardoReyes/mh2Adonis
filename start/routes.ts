@@ -19,7 +19,10 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-
+import View from '@ioc:Adonis/Core/View'
+Route.get('/', async () => {
+  return View.render('emails/prueba')
+})
 
 Route.post('/usuario/crear', 'UsersController.registrarUsuario')
 Route.post('/usuario/login', 'UsersController.login')
