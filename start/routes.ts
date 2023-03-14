@@ -67,6 +67,9 @@ Route.group(() => {
   Route.get('/ingrediente/info/:id', 'IngredientesController.obtenerIngrediente').middleware('checkRole:1,2')
   Route.put('/ingrediente/update/:id', 'IngredientesController.actualizarIngrediente').middleware('checkRole:1,2')
   Route.delete('/ingrediente/delete/:id', 'IngredientesController.eliminarIngrediente').middleware('checkRole:1')
+  Route.get('/ingrediente/stream', 'IngredientesController.stream').middleware('checkRole:1,2')
+
+
   //Objetos
   Route.post('/objetos/insertar', 'ObjetosController.registrarObjeto').middleware('checkRole:1,2')
   Route.get('/objetos', 'ObjetosController.obtenerObjetos').middleware('checkRole:1,2,3')

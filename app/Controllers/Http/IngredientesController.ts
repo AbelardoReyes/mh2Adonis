@@ -1,7 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Ingredientes from 'App/Models/Ingrediente'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-
+import { Readable } from 'stream';
 export default class IngredientesController {
   public async registrarIngrediente({ request, response }: HttpContextContract) {
     const validationSchema = schema.create({
@@ -45,6 +45,31 @@ export default class IngredientesController {
     const ingrediente = await Ingredientes.find(params.id)
     response.send(ingrediente)
   }
+  public async stream({ response }) {
+    const stream = new Readable();
+    stream._read = () => {};
+    const sendEvent = async () => {
+      const ingredientes = await Ingredientes.all();
+      const data = {
+        message: 'Nuevos datos disponibles',
+        ingredientes
+      };
+      stream.push(`data: ${JSON.stringify(data)}\n\n`);
+    };
+    const intervalId = setInterval(sendEvent, 5000);
+    response.on('close', () => {
+      clearInterval(intervalId);
+      stream.destroy();
+    });
+    response.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+    stream.pipe(response.response);
+  }
+
+
   public async actualizarIngrediente({ params, request, response }: HttpContextContract) {
     const ingrediente = await Ingredientes.find(params.id)
     const validationSchema = schema.create({
