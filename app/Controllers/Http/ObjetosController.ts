@@ -1,7 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Objetos from 'App/Models/Objeto'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
-
+import Ws from 'App/Services/Ws'
 export default class ObjetosController {
   public async registrarObjeto({ request, response }: HttpContextContract) {
     const objetoSchema = schema.create({
@@ -26,28 +26,38 @@ export default class ObjetosController {
       },
     })
     if (data) {
-    const objeto = new Objetos()
-    objeto.nombre = request.input('nombre')
-    objeto.descripcion = request.input('descripcion')
-    objeto.rareza = request.input('rareza')
-    objeto.valor = request.input('valor')
-    objeto.limiteBolsa = request.input('limiteBolsa')
+      const objeto = new Objetos()
+      objeto.nombre = request.input('nombre')
+      objeto.descripcion = request.input('descripcion')
+      objeto.rareza = request.input('rareza')
+      objeto.valor = request.input('valor')
+      objeto.limiteBolsa = request.input('limiteBolsa')
 
-    await objeto.save()
-    const respuesta = {
-      status : 200,
-      message: 'Objeto registrado',
-      data: objeto,
-      error: false
+      await objeto.save()
+      const respuesta = {
+        status: 200,
+        message: 'Objeto registrado',
+        data: objeto,
+        error: false
 
+      }
+      response.send(respuesta)
     }
-    response.send(respuesta)
-  }
   }
   public async obtenerObjetos({ response }: HttpContextContract) {
     const objeto = await Objetos.all()
+
+
+    console.log(objeto)
+    Ws.io.emit('objetos', objeto)
+
+
     response.send(objeto)
   }
+
+
+
+
   public async obtenerObjeto({ params, response }: HttpContextContract) {
     const objeto = await Objetos.find(params.id)
     response.send(objeto)
@@ -74,13 +84,13 @@ export default class ObjetosController {
     })
     if (objeto) {
       if (data) {
-      objeto.nombre = request.input('nombre')
-      objeto.descripcion = request.input('descripcion')
-      objeto.rareza = request.input('rareza')
-      objeto.valor = request.input('valor')
-      objeto.limiteBolsa = request.input('limiteBolsa')
-      await objeto.save()
-      response.send(objeto)
+        objeto.nombre = request.input('nombre')
+        objeto.descripcion = request.input('descripcion')
+        objeto.rareza = request.input('rareza')
+        objeto.valor = request.input('valor')
+        objeto.limiteBolsa = request.input('limiteBolsa')
+        await objeto.save()
+        response.send(objeto)
       }
     } else {
       response.status(404).send({ message: 'Objeto no encontrado' })
