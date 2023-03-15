@@ -46,12 +46,10 @@ export default class ObjetosController {
   }
   public async obtenerObjetos({ response }: HttpContextContract) {
     const objeto = await Objetos.all()
-
-
+    //Socket
     console.log(objeto)
     Ws.io.emit('objetos', objeto)
-
-
+    //Respuesta
     response.send(objeto)
   }
 
